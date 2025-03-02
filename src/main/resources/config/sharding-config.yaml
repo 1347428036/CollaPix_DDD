@@ -1,0 +1,28 @@
+databaseName: cloud_picture
+dataSources:
+  cloud_picture:
+    dataSourceClassName: $${shardingsphere.datasource.cloudPicture.dataSourceClassName::com.zaxxer.hikari.HikariDataSource}
+    driverClassName: $${shardingsphere.datasource.cloudPicture.driverClassName::com.mysql.cj.jdbc.Driver}
+    jdbcUrl: $${shardingsphere.datasource.cloudPicture.jdbcUrl::jdbc:mysql://192.168.117.128:3306/cloud_picture?useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai}
+    username: $${shardingsphere.datasource.cloudPicture.username::root}
+    password: $${shardingsphere.datasource.cloudPicture.password::rootpass001}
+rules:
+  - !SINGLE
+    tables:
+      - "cloud_picture.*"
+  - !SHARDING
+    tables:
+      picture:
+        actualDataNodes: cloud_picture.picture
+        tableStrategy:
+          standard:
+            shardingColumn: spaceId
+            shardingAlgorithmName: picture_sharding_algorithm
+    defaultTableStrategy:
+      none:
+    shardingAlgorithms:
+      picture_sharding_algorithm:
+        type: CLASS_BASED
+        props:
+          strategy: standard
+          algorithmClassName: com.esmiao.cloudpicture.manager.sharding.PictureShardingAlgorithm
