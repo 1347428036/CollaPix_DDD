@@ -73,7 +73,7 @@ public class PictureServiceImpl implements PictureService {
     public Picture uploadPicture(Object inputSource, PictureUploadRequest pictureUploadRequest, HttpServletRequest request) {
         // Validate Space existence and quota
         Long spaceId = NumUtil.parseLong(pictureUploadRequest.getSpaceId());
-        if (spaceId != null && SpaceConstant.PUBLIC_SPACE_ID == spaceId) {
+        if (spaceId != null && SpaceConstant.PUBLIC_SPACE_ID != spaceId) {
             Space space = spaceService.getSpaceById(spaceId);
             space.validateSpaceQuota();
         }
