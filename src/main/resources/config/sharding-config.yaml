@@ -25,4 +25,4 @@ rules:
         type: CLASS_BASED
         props:
           strategy: standard
-          algorithmClassName: com.esmiao.cloudpicture.manager.sharding.PictureShardingAlgorithm
+          algorithmClassName: com.esmiao.cloudpicture.shared.sharding.PictureShardingAlgorithm
