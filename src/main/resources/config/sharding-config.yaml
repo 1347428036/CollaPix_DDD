@@ -1,11 +1,11 @@
 databaseName: cloud_picture
 dataSources:
   cloud_picture:
-    dataSourceClassName: $${shardingsphere.datasource.cloudPicture.dataSourceClassName::com.zaxxer.hikari.HikariDataSource}
-    driverClassName: $${shardingsphere.datasource.cloudPicture.driverClassName::com.mysql.cj.jdbc.Driver}
-    jdbcUrl: $${shardingsphere.datasource.cloudPicture.jdbcUrl::jdbc:mysql://192.168.117.128:3306/cloud_picture?useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai}
-    username: $${shardingsphere.datasource.cloudPicture.username::root}
-    password: $${shardingsphere.datasource.cloudPicture.password::rootpass001}
+    dataSourceClassName: $${shardingsphere.datasource.collapix.dataSourceClassName::com.zaxxer.hikari.HikariDataSource}
+    driverClassName: $${shardingsphere.datasource.collapix.driverClassName::com.mysql.cj.jdbc.Driver}
+    jdbcUrl: $${shardingsphere.datasource.collapix.jdbcUrl::jdbc:mysql://192.168.117.128:3306/cloud_picture?useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai}
+    username: $${shardingsphere.datasource.collapix.username::root}
+    password: $${shardingsphere.datasource.collapix.password::rootpass001}
 rules:
   - !SINGLE
     tables:
@@ -25,4 +25,6 @@ rules:
         type: CLASS_BASED
         props:
           strategy: standard
-          algorithmClassName: com.esmiao.cloudpicture.shared.sharding.PictureShardingAlgorithm
+          algorithmClassName: com.esmiao.collapix.shared.sharding.PictureShardingAlgorithm
+props:
+  sql-show: $${shardingsphere.showSql::false}
