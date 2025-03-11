@@ -73,21 +73,25 @@ public class PictureServiceImpl implements PictureService {
     public Picture uploadPicture(Object inputSource, PictureUploadRequest pictureUploadRequest, HttpServletRequest request) {
         // Validate Space existence and quota
         Long spaceId = NumUtil.parseLong(pictureUploadRequest.getSpaceId());
-        if (spaceId != null && SpaceConstant.PUBLIC_SPACE_ID != spaceId) {
+        if (spaceId == null) {
+            spaceId = SpaceConstant.PUBLIC_SPACE_ID;
+        }
+
+        if (SpaceConstant.PUBLIC_SPACE_ID != spaceId) {
             Space space = spaceService.getSpaceById(spaceId);
             space.validateSpaceQuota();
         }
+
         ThrowErrorUtil.throwIf(ObjectUtil.isEmpty(inputSource), ErrorCodeEnum.PARAMS_ERROR, "Picture cannot be empty");
         Long pictureId = NumUtil.parseLong(pictureUploadRequest.getId());
         boolean isUpdating = pictureId != null;
-        // If updating an image, check if the image exists
+        // If updating an image, check if the image exists, check if the image belongs to the space
         Picture oldPicture = null;
         if (isUpdating) {
             oldPicture = pictureDomainService.getPictureById(pictureId);
+            ThrowErrorUtil.throwIf(oldPicture == null, ErrorCodeEnum.NOT_FOUND_ERROR);
             ThrowErrorUtil.throwIf(
-                spaceId != null && ObjUtil.notEqual(oldPicture.getSpaceId(), spaceId),
-                ErrorCodeEnum.NO_PERMISSION_ERROR);
-            spaceId = oldPicture.getSpaceId();
+                ObjUtil.notEqual(oldPicture.getSpaceId(), spaceId), ErrorCodeEnum.NO_PERMISSION_ERROR);
         }
         /*
          * Upload the image and get the result
@@ -104,7 +108,7 @@ public class PictureServiceImpl implements PictureService {
         transactionTemplate.execute(status -> {
             boolean result = pictureDomainService.saveOrUpdate(picture);
             ThrowErrorUtil.throwIf(!result, ErrorCodeEnum.OPERATION_ERROR, "Upload picture failed");
-            if (finalSpaceId != null && SpaceConstant.PUBLIC_SPACE_ID != finalSpaceId) {
+            if (SpaceConstant.PUBLIC_SPACE_ID != finalSpaceId) {
                 spaceService.updateSpaceQuota(finalSpaceId, picture.getPicSize(), oldPictureSize, isUpdating);
             }
 
