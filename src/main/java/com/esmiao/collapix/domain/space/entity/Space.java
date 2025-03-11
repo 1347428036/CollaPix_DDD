@@ -100,7 +100,8 @@ public class Space implements Serializable {
         if (add) {
             ThrowErrorUtil.throwIf(StrUtil.isBlank(this.spaceName), ErrorCodeEnum.PARAMS_ERROR, "Space name cannot be empty");
             ThrowErrorUtil.throwIf(this.spaceLevel == null, ErrorCodeEnum.PARAMS_ERROR, "Space level cannot be empty");
-            ThrowErrorUtil.throwIf(this.spaceType == null, ErrorCodeEnum.PARAMS_ERROR, "Space type cannot be empty");
+            SpaceTypeEnum spaceTypeEnum = SpaceTypeEnum.getEnumByValue(spaceType);
+            ThrowErrorUtil.throwIf(spaceTypeEnum == null, ErrorCodeEnum.PARAMS_ERROR, "Space type is invalid");
         }
         /*
          * Validate when adding or updating space
@@ -112,8 +113,6 @@ public class Space implements Serializable {
 
         SpaceLevelEnum spaceLevelEnum = SpaceLevelEnum.getEnumByValue(spaceLevel);
         ThrowErrorUtil.throwIf(spaceLevelEnum == null, ErrorCodeEnum.PARAMS_ERROR, "Space level is invalid");
-        SpaceTypeEnum spaceTypeEnum = SpaceTypeEnum.getEnumByValue(spaceType);
-        ThrowErrorUtil.throwIf(spaceTypeEnum == null, ErrorCodeEnum.PARAMS_ERROR, "Space type is invalid");
     }
 
     public void validateSpaceQuota() {
