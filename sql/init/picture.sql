@@ -14,6 +14,7 @@ create table if not exists picture
     picFormat    varchar(32)                        null comment '图片格式',
     picColor varchar(16) null comment '图片主色调',
     thumbnailUrl varchar(512) NULL COMMENT '缩略图 url',
+    originalUrl varchar(512) NULL COMMENT '原始图片 url',
     userId       bigint                             not null comment '创建用户 id',
     spaceId  bigint  null comment '空间 id（为空表示公共空间）',
     reviewStatus INT DEFAULT 0 NOT NULL COMMENT '审核状态：0-待审核; 1-通过; 2-拒绝',
