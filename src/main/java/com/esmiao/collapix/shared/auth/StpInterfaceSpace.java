@@ -2,6 +2,7 @@ package com.esmiao.collapix.shared.auth;
 
 import cn.dev33.satoken.stp.StpInterface;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
@@ -196,8 +197,16 @@ public class StpInterfaceSpace implements StpInterface {
     }
 
     private List<String> getPermissionBySpace(Long spaceId, User loginUser, List<String> adminPermissions) {
-        if (SpaceConstant.PUBLIC_SPACE_ID == spaceId && loginUser.isAdmin()) {
-            return adminPermissions;
+        if (SpaceConstant.PUBLIC_SPACE_ID == spaceId) {
+            if (loginUser.isAdmin()) {
+                return adminPermissions;
+            }
+
+            return CollUtil.newArrayList(
+                SpaceUserPermissionConstant.PICTURE_VIEW,
+                SpaceUserPermissionConstant.PICTURE_EDIT,
+                SpaceUserPermissionConstant.PICTURE_UPLOAD,
+                SpaceUserPermissionConstant.PICTURE_DELETE);
         }
         // Get Space object
         Space space = spaceService.getSpaceById(spaceId);

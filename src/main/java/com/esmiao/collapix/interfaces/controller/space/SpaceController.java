@@ -41,13 +41,13 @@ public class SpaceController {
     }
 
     @PostMapping("/add")
-    public CommonResponse<Long> addSpace(
+    public CommonResponse<String> addSpace(
         @RequestBody SpaceAddRequest spaceAddRequest,
         HttpServletRequest request) {
 
         // Convert entity and DTO here
         Space space = SpaceEntityFactory.buildSpace(spaceAddRequest);
-        return ResponseUtil.success(spaceService.addSpace(space, request));
+        return ResponseUtil.success(NumUtil.parseString(spaceService.addSpace(space, request)));
     }
 
     /**
