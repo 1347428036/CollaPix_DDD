@@ -45,7 +45,7 @@ public class PictureDynamicShardingManager {
     /**
      * The database name in the .properties file
      */
-    private static final String DATABASE_NAME = "cloud_picture";
+    private static final String DATABASE_NAME = "colla_pix";
 
     @PostConstruct
     public void initialize() {
