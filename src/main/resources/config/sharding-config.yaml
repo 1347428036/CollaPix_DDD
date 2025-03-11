@@ -1,19 +1,19 @@
-databaseName: cloud_picture
+databaseName: colla_pix
 dataSources:
-  cloud_picture:
+  colla_pix:
     dataSourceClassName: $${shardingsphere.datasource.collapix.dataSourceClassName::com.zaxxer.hikari.HikariDataSource}
     driverClassName: $${shardingsphere.datasource.collapix.driverClassName::com.mysql.cj.jdbc.Driver}
-    jdbcUrl: $${shardingsphere.datasource.collapix.jdbcUrl::jdbc:mysql://192.168.117.128:3306/cloud_picture?useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai}
+    jdbcUrl: $${shardingsphere.datasource.collapix.jdbcUrl::jdbc:mysql://192.168.117.128:3306/colla_pix?useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai}
     username: $${shardingsphere.datasource.collapix.username::root}
     password: $${shardingsphere.datasource.collapix.password::rootpass001}
 rules:
   - !SINGLE
     tables:
-      - "cloud_picture.*"
+      - "colla_pix.*"
   - !SHARDING
     tables:
       picture:
-        actualDataNodes: cloud_picture.picture
+        actualDataNodes: colla_pix.picture
         tableStrategy:
           standard:
             shardingColumn: spaceId
