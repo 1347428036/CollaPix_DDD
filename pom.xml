@@ -176,7 +176,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-                        <name>1347428036/collapix/${project.artifactId}</name>
+                        <name>${project.artifactId}:${project.version}</name>
                     </image>
                 </configuration>
             </plugin>

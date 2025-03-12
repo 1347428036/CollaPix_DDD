@@ -32,4 +32,4 @@ create table if not exists picture
     INDEX idx_userId (userId),              -- 提升基于用户 ID 的查询性能
     INDEX idx_spaceId (spaceId),
     INDEX idx_reviewStatus (reviewStatus)
-) comment '图片' collate = utf8mb4_unicode_ci;
+) comment '图片' ENGINE=InnoDB CHARSET=utf8mb4 collate = utf8mb4_unicode_ci;
