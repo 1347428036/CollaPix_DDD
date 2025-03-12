@@ -75,7 +75,7 @@ public class PictureDomainServiceImpl implements PictureDomainService {
 
     @Override
     public UploadPictureResult uploadPicture(Object inputSource, User loginUser, Long spaceId) {
-        String uploadPathPrefix = spaceId != null && SpaceConstant.PUBLIC_SPACE_ID == spaceId ?
+        String uploadPathPrefix = spaceId != null && SpaceConstant.PUBLIC_SPACE_ID != spaceId ?
             // Assign directory according to spaceId
             String.format(PRIVATE_SPACE_UPLOAD_PREFIX, spaceId) :
             // Assign directory according to user id
