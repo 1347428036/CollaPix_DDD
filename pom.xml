@@ -29,6 +29,7 @@
     <properties>
         <java.version>17</java.version>
         <shardingsphere.version>5.5.1</shardingsphere.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
         <!--
