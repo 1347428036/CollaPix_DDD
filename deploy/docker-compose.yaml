@@ -44,7 +44,10 @@ services:
       - "8123:8123"
     mem_limit: 1g
     environment:
-      JAVA_TOOL_OPTIONS: "-DSpring.profiles.active=prod -Dapp.cache.manager=multilayer -Dshardingsphere.datasource.collapix.jdbcUrl=jdbc:mysql://mysql001:3306/colla_pix?useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai -Dshardingsphere.datasource.collapix.username=root -Dshardingsphere.datasource.collapix.password=rootpass001 -Dshardingsphere.showSql=true"
+      LANG: "en_US.UTF-8"
+      LANGUAGE: "en_US:en"
+      LC_ALL: "en_US.UTF-8"
+      JAVA_TOOL_OPTIONS: "-DSpring.profiles.active=prod -Dapp.cache.manager=multilayer -Dshardingsphere.datasource.collapix.jdbcUrl=jdbc:mysql://mysql001:3306/colla_pix?useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai -Dshardingsphere.datasource.collapix.username=root -Dshardingsphere.datasource.collapix.password=rootpass001"
     restart: unless-stopped
 
 networks:
