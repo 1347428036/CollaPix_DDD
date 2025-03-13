@@ -5,6 +5,7 @@
 ## Project Introduction
 
 The project is based on Vue 3 + Spring Boot + COS + WebSocket.
+The web platform repo can check here [CollaPix-app](https://github.com/1347428036/Collapix-app).
 
 This platform has a wide range of application scenarios. Its core functions are divided into 4 major categories.
 
