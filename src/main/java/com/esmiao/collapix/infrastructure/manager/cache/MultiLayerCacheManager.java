@@ -39,8 +39,7 @@ public class MultiLayerCacheManager<K, R> implements CacheManager<K, R> {
 
     @Override
     public R get(K key, Supplier<R> valuSupplier) {
-        return valuSupplier.get();
-        //return get(key, valuSupplier, TimeUnit.SECONDS, DEFAULT_EXPIRATION_SECONDS);
+        return get(key, valuSupplier, TimeUnit.SECONDS, DEFAULT_EXPIRATION_SECONDS);
     }
 
     @Override
