@@ -1,5 +1,6 @@
 package com.esmiao.collapix.infrastructure.manager.cache;
 
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisCacheContext<K, R> implements CacheContext<K, R> {
 
+    @Resource(name = "redisTemplate")
     private final RedisTemplate<K, R> redisTemplate;
 
     @Override

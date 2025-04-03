@@ -10,6 +10,8 @@ public interface DistributedLock {
 
     boolean tryLock(String lockKey, long acquireTimeout, long expireTime);
 
+    boolean tryLock(String lockKey, long acquireTime);
+
     boolean lock(String lockKey, long expire);
 
     void unlock(String lockKey);

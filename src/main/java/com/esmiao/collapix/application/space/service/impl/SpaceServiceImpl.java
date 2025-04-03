@@ -9,6 +9,7 @@ import com.esmiao.collapix.domain.space.service.SpaceDomainService;
 import com.esmiao.collapix.domain.space.service.SpaceUserDomainService;
 import com.esmiao.collapix.domain.user.entity.User;
 import com.esmiao.collapix.infrastructure.common.DeleteRequest;
+import com.esmiao.collapix.infrastructure.lock.DistributedLock;
 import com.esmiao.collapix.infrastructure.utils.NumUtil;
 import com.esmiao.collapix.interfaces.dto.space.SpaceQueryRequest;
 import com.esmiao.collapix.interfaces.vo.user.UserVo;
@@ -31,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -45,8 +45,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SpaceServiceImpl implements SpaceService {
 
-    private static final Map<Long, Object> LOCK_MAP = new ConcurrentHashMap<>();
-
     private final UserService userService;
 
     private final TransactionTemplate transactionTemplate;
@@ -58,6 +56,8 @@ public class SpaceServiceImpl implements SpaceService {
     private final SpaceUserDomainService spaceUserDomainService;
 
     private final SpaceUserAuthConfigLoader spaceUserAuthConfigLoader;
+
+    private final DistributedLock distributedLock;
 
     @Override
     public long addSpace(Space space, HttpServletRequest request) {
@@ -71,37 +71,40 @@ public class SpaceServiceImpl implements SpaceService {
         if (SpaceLevelEnum.COMMON.getValue() != space.getSpaceLevel() && !loginUser.isAdmin()) {
             throw new BusinessException(ErrorCodeEnum.NO_PERMISSION_ERROR, "No permission to create a space with this level");
         }
-        // Add lock for every user
-        //todo: Use distributed lock in the future
-        Object lock = LOCK_MAP.computeIfAbsent(userId, k -> new Object());
-        synchronized (lock) {
-            try {
-                Long newSpaceId = transactionTemplate.execute(status -> {
-                    if (!loginUser.isAdmin()) {
-                        boolean exists = spaceDomainService.checkSpaceExistenceForUser(userId, space.getSpaceType());
-                        ThrowErrorUtil.throwIf(
-                            exists,
-                            ErrorCodeEnum.OPERATION_ERROR,
-                            "Each user can only have one space of each type");
-                    }
 
-                    boolean result = spaceDomainService.saveSpace(space);
-                    ThrowErrorUtil.throwIf(!result, ErrorCodeEnum.OPERATION_ERROR);
-                    if (SpaceTypeEnum.TEAM.getValue() == space.getSpaceType()) {
-                        SpaceUser spaceUser = new SpaceUser();
-                        spaceUser.setUserId(userId);
-                        spaceUser.setSpaceId(space.getId());
-                        spaceUser.setSpaceRole(SpaceRoleEnum.ADMIN.getValue());
-                        boolean saved = spaceUserDomainService.saveSpaceUser(spaceUser);
-                        ThrowErrorUtil.throwIf(!saved, ErrorCodeEnum.OPERATION_ERROR, "Create team member failed");
-                    }
-                    pictureDynamicShardingManager.createSpacePictureTable(space);
-                    return space.getId();
-                });
-                return Optional.ofNullable(newSpaceId)
-                    .orElseThrow(() -> new BusinessException(ErrorCodeEnum.OPERATION_ERROR));
-            } finally {
-                LOCK_MAP.remove(userId);
+        boolean locked = false;
+        try {
+            // Add lock for every user
+            locked = distributedLock.tryLock(String.valueOf(userId), 5000);
+            ThrowErrorUtil.throwIf(!locked, ErrorCodeEnum.OPERATION_ERROR, "Failed to get a locker");
+            Long newSpaceId = transactionTemplate.execute(status -> {
+                if (!loginUser.isAdmin()) {
+                    boolean exists = spaceDomainService.checkSpaceExistenceForUser(userId, space.getSpaceType());
+                    ThrowErrorUtil.throwIf(
+                        exists,
+                        ErrorCodeEnum.OPERATION_ERROR,
+                        "Each user can only have one space of each type");
+                }
+
+                boolean result = spaceDomainService.saveSpace(space);
+                ThrowErrorUtil.throwIf(!result, ErrorCodeEnum.OPERATION_ERROR);
+                if (SpaceTypeEnum.TEAM.getValue() == space.getSpaceType()) {
+                    SpaceUser spaceUser = new SpaceUser();
+                    spaceUser.setUserId(userId);
+                    spaceUser.setSpaceId(space.getId());
+                    spaceUser.setSpaceRole(SpaceRoleEnum.ADMIN.getValue());
+                    boolean saved = spaceUserDomainService.saveSpaceUser(spaceUser);
+                    ThrowErrorUtil.throwIf(!saved, ErrorCodeEnum.OPERATION_ERROR, "Create team member failed");
+                }
+                pictureDynamicShardingManager.createSpacePictureTable(space);
+                return space.getId();
+            });
+
+            return Optional.ofNullable(newSpaceId)
+                .orElseThrow(() -> new BusinessException(ErrorCodeEnum.OPERATION_ERROR));
+        } finally {
+            if (locked) {
+                distributedLock.unlock(String.valueOf(userId));
             }
         }
     }

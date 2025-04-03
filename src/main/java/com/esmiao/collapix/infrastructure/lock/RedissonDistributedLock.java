@@ -21,7 +21,22 @@ public class RedissonDistributedLock implements DistributedLock {
     @Override
     public boolean tryLock(String lockKey, long acquireTimeout, long expireTime) {
         try {
-            return redisson.getLock(lockKey).tryLock(expireTime, acquireTimeout, TimeUnit.MILLISECONDS);
+            return redisson.getLock(lockKey).tryLock(acquireTimeout, expireTime, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            log.error("Failed to get redis lock", e);
+        }
+
+        return false;
+    }
+
+    /**
+     * Try to get lock with acquireTime.
+     * Use default watchdog timeout as key expire time.
+     * */
+    @Override
+    public boolean tryLock(String lockKey, long acquireTime) {
+        try {
+            return redisson.getLock(lockKey).tryLock(acquireTime, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             log.error("Failed to get redis lock", e);
         }
